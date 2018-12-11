@@ -34,7 +34,7 @@ public class DetailActivity extends AppCompatActivity {
     Toolbar toolbar;
     private ViewPager mViewPager;
     DataHolder dataHolder;
-    DatabaseReference mRootDatabaseRef = FirebaseDatabase.getInstance().getReference();
+    DatabaseReference mRootDatabaseRef = FirebaseDatabase.getInstance().getReference();.
     DatabaseReference databaseReference;
     FirebaseStorage storage;
     StorageReference storageReference;
