@@ -76,6 +76,7 @@ public class LoginActivity extends AppCompatActivity {
             radioButton.setChecked(true);
         }
 
+        //Reference to the hyperlink to start a new WebViewActivity intent to display the website.
         ClickableSpan clickableSpan = new ClickableSpan() {
             @Override
             public void onClick(View widget) {
@@ -105,6 +106,7 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, "Please enter password", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                //checkbox for us to store the username and password if it is marked by the user.
                 if (radioButton.isChecked()) {
                     loginPrefsEditor.putBoolean("saveLogin", true);
                     loginPrefsEditor.putString("storeusername", loginstudentid);
@@ -114,7 +116,7 @@ public class LoginActivity extends AppCompatActivity {
                     loginPrefsEditor.clear();
                     loginPrefsEditor.commit();
                 }
-
+                    //Authentication of user is done using Firebase Authentication.
                     auth.signInWithEmailAndPassword(loginstudentid, loginpassword)
                             .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                                 @Override

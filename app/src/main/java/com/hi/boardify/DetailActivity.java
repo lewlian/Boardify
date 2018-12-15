@@ -25,6 +25,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 public class DetailActivity extends AppCompatActivity {
     private static final String TAG = "TAG";
@@ -34,7 +35,7 @@ public class DetailActivity extends AppCompatActivity {
     Toolbar toolbar;
     private ViewPager mViewPager;
     DataHolder dataHolder;
-    DatabaseReference mRootDatabaseRef = FirebaseDatabase.getInstance().getReference();.
+    DatabaseReference mRootDatabaseRef = FirebaseDatabase.getInstance().getReference();
     DatabaseReference databaseReference;
     FirebaseStorage storage;
     StorageReference storageReference;
@@ -45,19 +46,22 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_detail);
+        //Necessary references to firebase and widgets
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
         dataHolder = DataHolder.getInstance();
-        setContentView(R.layout.activity_detail);
         databaseReference = mRootDatabaseRef.child(dataHolder.getUserID());
         Log.i("TAG",dataHolder.getUserID());
         professor = findViewById(R.id.professor);
         time = findViewById(R.id.time);
 
+        //Allow the internal back button to function
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         data = getIntent().getParcelableArrayListExtra("data");
         pos = getIntent().getIntExtra("pos",0);
 
@@ -76,16 +80,15 @@ public class DetailActivity extends AppCompatActivity {
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setCurrentItem(pos);
 
+        //Allow page scrolling in DetailActivity view
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int i, float v, int i1) {
             }
-
             @Override
             public void onPageSelected(int i) {
                 setTitle(data.get(i).getName());
             }
-
             @Override
             public void onPageScrollStateChanged(int i) {
 
@@ -93,6 +96,8 @@ public class DetailActivity extends AppCompatActivity {
         });
     }
 
+    //Checks the previous intent and prepare the necessary options in the toolbar menu
+    //showing either "download" or "detele" depending on whether use is in "Saved Whiteboards" or viewing from "online classes"
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         if (getIntent().getStringExtra("Uniqid").equals("Boards")){
@@ -134,30 +139,31 @@ public class DetailActivity extends AppCompatActivity {
             }
         if (id == R.id.action_delete){
             databaseReference.child(data.get(pos).getId()).removeValue();
-            String storageUrl = "images/"+data.get(pos).getName(); //get the file path to be removed
-            StorageReference storageReference = FirebaseStorage.getInstance().getReference().child(storageUrl); //set it as child
-            storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() { //deletes it
+            String storageUrl = "images/"+data.get(pos).getName(); //get the file path to be removed from Firebase Storage
+            StorageReference storageReference = FirebaseStorage.getInstance().getReference().child(storageUrl); //Set the filepath as the name
+            storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() { //deletes the image on Firebase Storage
+
                 @Override
                 public void onSuccess(Void aVoid) {
                     // File deleted successfully
                     Log.d(TAG, "onSuccess: deleted file");
                     dataHolder.decuploadCount(); //if success we will decrement the uploadCount
+                    Toast.makeText(DetailActivity.this,"Whiteboard deleted",Toast.LENGTH_LONG).show();
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
-                    // Uh-oh, an error occurred!
+                    // If an error occurs we will log it for tracking purposes
                     Log.d(TAG, "onFailure: did not delete file");
+                    Toast.makeText(DetailActivity.this,"Error occurred while deleting",Toast.LENGTH_LONG).show();
                 }
             });
+            //Returns to the RecyclerView whether or not the delete was successful
             Intent intent = new Intent(DetailActivity.this, MainActivity.class);
             intent.putExtra("delete",true);
             startActivity(intent);
             this.overridePendingTransition(0,R.anim.left_to_right);
-            Toast.makeText(DetailActivity.this,"Whiteboard deleted",Toast.LENGTH_LONG).show();
-
         }
-
         return super.onOptionsItemSelected(item);
     }
 

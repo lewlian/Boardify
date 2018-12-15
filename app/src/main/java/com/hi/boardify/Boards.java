@@ -51,6 +51,8 @@ public class Boards extends AppCompatActivity{
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        //Sets the respective server_url and search_url to query from depending on which module user selected
         if (getIntent().getStringExtra("prev").equals("infosys")){
             server_url = "http://boardify.ml/module/1";
             searchurl = "http://boardify.ml/search/1";
@@ -84,23 +86,25 @@ public class Boards extends AppCompatActivity{
             searchurl = "http://boardify.ml/search/8";
             getSupportActionBar().setTitle(getString(R.string.hass));
         }
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //Extracts necessary information into data ArrayList<ImageModel> Refer to function below
         getJson();
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.hide();
 
+        //Sets up the recycler view with the ImageModels loaded into the data ArrayList
         RecyclerView mRecyclerView = findViewById(R.id.list);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this,2));
         mRecyclerView.setHasFixedSize(true);
         mAdapter = new GalleryAdapter(Boards.this, data);
         mRecyclerView.setAdapter(mAdapter);
 
+        //When a specific item is selected, we need to pass the information of the item to the detailActivity view to select.
         mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this,
                 new RecyclerItemClickListener.OnItemClickListener() {
 
                     @Override
                     public void onItemClick(View view, int position) {
-
                         Intent intent = new Intent(Boards.this, DetailActivity.class);
                         intent.putParcelableArrayListExtra("data", data);
                         intent.putExtra("pos", position);
@@ -111,6 +115,8 @@ public class Boards extends AppCompatActivity{
                 }));
 
     }
+
+    //Request for the jsonObject from the server_url, and then for all the items inside the jsonArray we will extract the informations that we need/want to display on our application. we then add them into an array of <ImageModel> called 'data' which we will use later to setup our RecyclerView.
     private void getJson(){
         final RequestQueue requestQueue  = Volley.newRequestQueue(Boards.this);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, server_url, null,
@@ -157,7 +163,6 @@ public class Boards extends AppCompatActivity{
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_search,menu);
-
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) searchItem.getActionView();
 
@@ -170,7 +175,6 @@ public class Boards extends AppCompatActivity{
                 startActivity(intent);
                 return true;
             }
-
             @Override
             public boolean onQueryTextChange(String newText) {
 

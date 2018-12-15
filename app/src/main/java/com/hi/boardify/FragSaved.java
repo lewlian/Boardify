@@ -52,7 +52,6 @@ public class FragSaved extends Fragment {
 
 
     public FragSaved() {
-
         // Required empty public constructor
     }
 
@@ -60,12 +59,12 @@ public class FragSaved extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_frag_saved, container, false);
         dataHolder = DataHolder.getInstance();
         databaseReference = mRootDatabaseRef.child(dataHolder.getUserID());
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
-        super.onCreate(savedInstanceState);
         data = new ArrayList<>();
         final RecyclerView mRecyclerView = view.findViewById(R.id.list);
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(),2);
@@ -88,6 +87,7 @@ public class FragSaved extends Fragment {
 
         });
 
+        //Adds a listener for any new data added onto the database, IF there are any new uploads or changes. we will flush the arraylist data and reload it again with whatever is now on the database. then we pass it to the RecyclerView adapter to refresh the updated items to be displayed
         databaseReference.addValueEventListener(
                 new ValueEventListener() {
                     @Override
@@ -108,7 +108,7 @@ public class FragSaved extends Fragment {
                     }
                 }
         );
-
+        //Similarly to Activity Boards, we will pass the necessary information when any of the image is selected
         mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(),
                 new RecyclerItemClickListener.OnItemClickListener() {
 
@@ -119,13 +119,12 @@ public class FragSaved extends Fragment {
                         intent.putExtra("pos", position);
                         intent.putExtra("Uniqid", "DownloadBoards");
                         startActivity(intent);
-
                     }
                 }));
-
-
         return view;
     }
+
+    //Implicit intent invoked by the floating action bar and starts an activity waiting for a result which is the image picked by user for upload
     @Override
    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -144,14 +143,14 @@ public class FragSaved extends Fragment {
             }
         }
     }
-    private void uploadImage() {
 
+    //Similar to an AsyncTask, the uploadImage does the upload in the background with a progress listener which allows us to show a dialog of the percentage uploaded.
+    private void uploadImage() {
         if(filePath != null)
         {
             final ProgressDialog progressDialog = new ProgressDialog(getActivity());
             progressDialog.setTitle("Uploading...");
             progressDialog.show();
-
             //dataHolder stores the integer count of the number of uploads which helps to name the file in order as well for uploads/deletes.
             //So we generate a file name called upload + whatever number count it is at. This has to be persistent so that the we will not replace when we try to upload again
             // Note this child is also what appears on the Firebase Storage so it is the name to use when deleting as well
@@ -188,6 +187,7 @@ public class FragSaved extends Fragment {
                     });
         }
     }
+    //UploadImage helps us upload it to the Firebase Storage but we still need to get its reference which is the file path to the storage item on firebase and store it to the database. This is because the only way we are loading or populating our ImageModels for recyclerview to display is from listening to the realtime database.
     private void uploadDatabase(ImageModel uploadImage){
         databaseReference.child(uploadImage.getName()).setValue(uploadImage); //Name that is pushed up onto the Firebase Database
     }

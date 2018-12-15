@@ -73,39 +73,4 @@ public class GalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
 
     }
-
-//    @Override
-//    public Filter getFilter() {
-//
-//        return dataFilter;
-//    }
-//    private Filter dataFilter = new Filter(){
-//        @Override
-//        protected FilterResults performFiltering(CharSequence constraint) {
-//            ArrayList<ImageModel> filteredList = new ArrayList<>();
-//
-//            if (constraint == null || constraint.length()==0){
-//                filteredList.addAll(dataFull);
-//            }else{
-//                String filterPattern  = constraint.toString().toLowerCase().trim();
-//
-//                for (ImageModel imageModel: dataFull){
-//                    if(imageModel.getUrl().toLowerCase().contains(filterPattern)){
-//                        filteredList.add(imageModel);
-//                    }
-//                }
-//            }
-//            FilterResults results = new FilterResults();
-//            results.values = filteredList;
-//            return results;
-//        }
-//
-//        @Override
-//        protected void publishResults(CharSequence constraint, FilterResults results) {
-//            data.clear();
-//            data.addAll((ArrayList) results.values);
-//            notifyDataSetChanged();
-//        }
-//    };
-
 }

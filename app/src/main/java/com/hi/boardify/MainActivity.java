@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity
     private SharedPreferences loginPreferences;
     private SharedPreferences.Editor loginPrefsEditor;
     String searchurl="http://boardify.ml/search";
+
+    //This activity is our main navigation drawer activity which allows us to inflate 2 fragments. Upon log in, by default it will always show the FragClass, and when "My Whiteboards" is selected from the navigation pane it will inflate the FragSaved.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,9 +63,6 @@ public class MainActivity extends AppCompatActivity
         }else{
             fragmentTransaction.replace(R.id.screen, new FragClass()).commit(); //the line that opens up the fragclass
         }
-
-
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setItemIconTintList(null);
@@ -124,8 +123,6 @@ public class MainActivity extends AppCompatActivity
                 loginPrefsEditor.commit();
                 Toast.makeText(MainActivity.this, "Logout successful", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
-
-
             }
         }
 
@@ -152,6 +149,8 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    //Just allows us to hide the keyboard on search.
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);

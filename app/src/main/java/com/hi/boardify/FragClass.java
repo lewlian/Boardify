@@ -29,9 +29,6 @@ import java.util.List;
 
 
 public class FragClass extends Fragment {
-    //String server_url = "http://boardify.ml";
-    //String json;
-
     public FragClass() {
         // Required empty public constructor
     }
